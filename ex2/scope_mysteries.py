@@ -1,58 +1,59 @@
 from typing import Callable, Any
 
-def mage_counter() -> Callable[[], int]:
-    """
-    Crée un compteur magique persistant sans variables globales
-    """
-    count = 0  
-    
-    def counter() -> int:
-        nonlocal count  
+
+def mage_counter() -> Callable:
+    count = 0
+
+    def incrementer() -> int:
+        nonlocal count
         count += 1
         return count
-    
-    return counter
+
+    return incrementer
 
 
-def spell_accumulator(initial_power: int) -> Callable[[int], int]:
-    """
-    Crée un accumulateur de puissance magique.
-    """
-    total_power = initial_power  
-    
-    def accumulator(power: int) -> int:
-        nonlocal total_power
-        total_power += power  
-        return total_power
-    
-    return accumulator
+def spell_accumulator(initial_power: int) -> Callable:
+    if not isinstance(initial_power, int):
+        def handle_error() -> str:
+            return "Power must be an integer"
+        return handle_error
+
+    current_power = initial_power
+
+    def accumulate_power(power: int) -> int | str:
+        try:
+            nonlocal current_power
+            current_power += power
+            return current_power
+        except (TypeError, ValueError):
+            return "Power must be an integer"
+
+    return accumulate_power
 
 
-def enchantment_factory(enchantment_type: str) -> Callable[[str], str]:
-    """
-    Fabrique des fonctions d'enchantement spécifiques.
-    """
-    def enchant(item_name: str) -> str:
-       
-        return f"{enchantment_type} {item_name}"
-    
-    return enchant
+def enchantment_factory(enchantment_type: str) -> Callable:
+    def create_enchanted_description(item: str) -> str:
+        try:
+            enchantment_description = f"{enchantment_type} {item}"
+            return enchantment_description
+        except Exception:
+            return "Enchantment failed"
+
+    return create_enchanted_description
 
 
 def memory_vault() -> dict[str, Callable]:
-    """
-    Crée un système de gestion de mémoire privée via une closure.
-    """
-    vault = {} 
-    
+    vault = {}
+
     def store(key: str, value: Any) -> None:
-        """Enregistre une valeur dans la mémoire."""
-        vault[key] = value
-        
+        try:
+            vault[key] = value
+        except Exception:
+            print("Cannot store in dictionnary")
+
     def recall(key: str) -> Any:
-        """Récupère une valeur ou indique si elle est absente."""
         return vault.get(key, "Memory not found")
-    
+
     return {
         'store': store,
         'recall': recall
@@ -60,32 +61,39 @@ def memory_vault() -> dict[str, Callable]:
 
 
 def main() -> None:
-   
-    print("\nTesting mage counter...")
-    counter = mage_counter()
-    print(f"Call 1: {counter()}")  
-    print(f"Call 2: {counter()}")  
-    print(f"Call 3: {counter()}")  
 
+    print("Testing mage counter...")
+
+    counter = mage_counter()
+
+    for i in range(1, 4):
+        print(f"call {i} {counter()}")
 
     print("\nTesting spell accumulator...")
-    acc = spell_accumulator(100)
-    print(f"Adding 50: {acc(50)}")   
-    print(f"Adding 25: {acc(25)}")   
 
-   
+    start_power = 0
+    accumulator = spell_accumulator(start_power)
+    print(f"At the beginning, total power = {start_power}")
+    initial_powers = [79, 66, 78]
+    for p in initial_powers:
+        print(f"add {p} : total power = {accumulator(p)}")
+
     print("\nTesting enchantment factory...")
+
     fire_factory = enchantment_factory("Flaming")
     ice_factory = enchantment_factory("Frozen")
-    print(fire_factory("Sword"))  
-    print(ice_factory("Shield"))  
-
+    result_fire = fire_factory("Sword")
+    result_ice = ice_factory("Shield")
+    print(f"{result_fire}")
+    print(f"{result_ice}")
 
     print("\nTesting memory vault...")
+
     vault = memory_vault()
-    vault['store']("secret_spell", "Abra Kadabra")
-    print(f"Recall secret: {vault['recall']('secret_spell')}")
-    print(f"Recall unknown: {vault['recall']('lost_scroll')}")
+    vault['store']("my secret artifact", "my secret spell")
+    print(f"Recall secret: {vault['recall']('my secret artifact')}")
+    print(f"Recall unknown: {vault['recall']('my secret password')}")
+
 
 if __name__ == "__main__":
     main()
