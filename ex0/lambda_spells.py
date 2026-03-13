@@ -6,11 +6,14 @@
 #  By: stmaire <stmaire@student.42.fr>           +#+  +:+       +#+         #
 #                                              +#+#+#+#+#+   +#+            #
 #  Created: 2026/03/12 16:33:38 by steph           #+#    #+#               #
-#  Updated: 2026/03/13 08:46:36 by stmaire         ###   ########.fr        #
+#  Updated: 2026/03/13 08:50:59 by stmaire         ###   ########.fr        #
 #                                                                           #
 # ************************************************************************* #
 
-def artifact_sorter(artifacts: list[dict]) -> list[dict]:
+from typing import Any
+
+
+def artifact_sorter(artifacts: list[dict[str, Any]]) -> list[dict[str, Any]]:
     sorted_artifacts = sorted(
         artifacts,
         key=lambda artifact: artifact["power"],
@@ -19,7 +22,10 @@ def artifact_sorter(artifacts: list[dict]) -> list[dict]:
     return sorted_artifacts
 
 
-def power_filter(mages: list[dict], min_power: int) -> list[dict]:
+def power_filter(
+        mages: list[dict[str, Any]],
+        min_power: int
+        ) -> list[dict[str, Any]]:
     filtered_mages = list(
         filter(lambda mage: mage["power"] >= min_power, mages)
         )
@@ -31,7 +37,7 @@ def spell_transformer(spells: list[str]) -> list[str]:
     return transformed_spells
 
 
-def mage_stats(mages: list[dict]) -> dict:
+def mage_stats(mages: list[dict[str, Any]]) -> dict[str, Any]:
     nb_mages = len(mages)
     if nb_mages == 0:
         return {'max_power': 0, 'least_power': 0, 'avg_power': 0.00}

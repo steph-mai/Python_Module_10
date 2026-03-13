@@ -1,71 +1,105 @@
-from typing import Callable, Any
+# ************************************************************************* #
+#                                                                           #
+#                                                      :::      ::::::::    #
+#  higher_magic.py                                   :+:      :+:    :+:    #
+#                                                  +:+ +:+         +:+      #
+#  By: stmaire <stmaire@student.42.fr>           +#+  +:+       +#+         #
+#                                              +#+#+#+#+#+   +#+            #
+#  Created: 2026/03/13 08:55:30 by stmaire         #+#    #+#               #
+#  Updated: 2026/03/13 13:40:29 by stmaire         ###   ########.fr        #
+#                                                                           #
+# ************************************************************************* #
+
+from typing import Any, Callable
+
 
 def spell_combiner(spell1: Callable, spell2: Callable) -> Callable:
-    """
-    Combine deux sorts pour qu'ils soient lancés simultanément. [cite: 203]
-    Retourne un tuple contenant les résultats des deux sorts. [cite: 205]
-    """
-    def combined_spell(*args: Any, **kwargs: Any) -> tuple:
-        return (spell1(*args, **kwargs), spell2(*args, **kwargs))
-    
+    def combined_spell(*args: Any, **kwargs: Any) -> tuple | str:
+        try:
+            return (spell1(*args, **kwargs), spell2(*args, **kwargs))
+        except Exception as e:
+            return f"cannot cast spells: {e}"
+
     return combined_spell
 
 
 def power_amplifier(base_spell: Callable, multiplier: int) -> Callable:
-    """
-    Amplifie la puissance d'un sort de base par un multiplicateur. [cite: 208]
-    """
-    def amplified_spell(*args: Any, **kwargs: Any) -> int | float:
-        return base_spell(*args, **kwargs) * multiplier
-    
+    def amplified_spell(*args, **kwargs) -> int | float | str:
+        try:
+            result = base_spell(*args, **kwargs)
+            return result * multiplier
+        except (TypeError, ValueError) as e:
+            return (f"Cannot amplify : Invalid args: {e}")
+
     return amplified_spell
 
 
 def conditional_caster(condition: Callable, spell: Callable) -> Callable:
-    """
-    Lance un sort uniquement si une condition magique est remplie. [cite: 212]
-    """
-    def cast_if_ready(*args: Any, **kwargs: Any) -> Any:
-        if condition(*args, **kwargs):
+    def valid_cast_spell(*args, **kwargs):
+        try:
+            valid = condition(*args, **kwargs)
+            if valid is False:
+                return "Spell fizzled"
             return spell(*args, **kwargs)
-        return "Spell fizzled"  
-    
-    return cast_if_ready
+        except Exception as e:
+            return f"cannot cast spells: {e}"
+
+    return valid_cast_spell
 
 
 def spell_sequence(spells: list[Callable]) -> Callable:
-    """
-    Crée une séquence de sorts lancés les uns après les autres. [cite: 216]
-    Retourne une liste de tous les résultats. [cite: 217, 219]
-    """
-    def sequence_executor(*args: Any, **kwargs: Any) -> list:
-        return [s(*args, **kwargs) for s in spells]
-    
-    return sequence_executor
+    def cast_ordered_spells(*args, **kwargs) -> list[Any] | str:
+        try:
+            return [s(*args, **kwargs) for s in spells]
+        except Exception as e:
+            return f"cannot cast spells: {e}"
+
+    return cast_ordered_spells
 
 
 def main() -> None:
-    fireball = lambda target: f"Fireball hits {target}"
-    heal = lambda target: f"Heals {target}"
-    damage_spell = lambda _: 10
-    is_dragon = lambda target: target.lower() == "dragon"
-
     print("\nTesting spell combiner...")
+
+    def fireball(target) -> str:
+        return f"Fireball hits {target}"
+
+    def heal(target) -> str:
+        return f"Heals {target}"
+
+    def feeze(target) -> str:
+        return f"Feeze ices {target}"
+
     combined = spell_combiner(fireball, heal)
-    print(f"Combined spell result: {combined('Dragon')}") [cite: 223]
+    result = (combined("dragon"))
+    clean_result = ", ".join(result)
+    print(f"Combined spell result: {clean_result}")
 
     print("\nTesting power amplifier...")
-    mega_fireball = power_amplifier(damage_spell, 3)
-    print(f"Original: 10, Amplified: {mega_fireball('Dragon')}") [cite: 225]
+
+    def damage_spell(target) -> int:
+        return 10
+
+    amplified = power_amplifier(damage_spell, 3)
+    print(f"Original: {damage_spell('dragon')}, "
+          f"Amplified: {amplified('dragon')}")
 
     print("\nTesting conditional caster...")
-    dragon_slayer = conditional_caster(is_dragon, fireball)
-    print(f"Targeting Dragon: {dragon_slayer('Dragon')}")
-    print(f"Targeting Goblin: {dragon_slayer('Goblin')}")
 
-    print("\nTesting spell sequence...")
-    barrage = spell_sequence([fireball, heal])
-    print(f"Sequence results: {barrage('Warrior')}")
+    def is_dragon(target) -> bool:
+        if target.lower() != "dragon":
+            return False
+        return True
+
+    casted_spell = conditional_caster(is_dragon, fireball)
+    print(f"{casted_spell('Dragon')}")
+    print(f"{casted_spell('Wizard')}")
+
+    print("\nTesting spell_sequence...")
+    ordered_spells = spell_sequence([fireball, heal, feeze])
+    result = ordered_spells('Dragon')
+    clean_result = ", ".join(result)
+    print(f"{clean_result}")
+
 
 if __name__ == "__main__":
     main()
