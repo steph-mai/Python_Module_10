@@ -6,7 +6,7 @@
 #  By: stmaire <stmaire@student.42.fr>           +#+  +:+       +#+         #
 #                                              +#+#+#+#+#+   +#+            #
 #  Created: 2026/03/16 13:18:10 by stmaire         #+#    #+#               #
-#  Updated: 2026/03/16 16:00:50 by stmaire         ###   ########.fr        #
+#  Updated: 2026/03/16 18:18:39 by stmaire         ###   ########.fr        #
 #                                                                           #
 # ************************************************************************* #
 
@@ -48,12 +48,12 @@ def retry_spell(max_attempts: int) -> Callable[
     [Callable[..., Any]],
     Callable[..., Any]
 ]:
-    def decorator(func: Callable[..., Any]) -> Callable[..., Any]:
-        @functools.wraps(func)
+    def decorator(function: Callable[..., Any]) -> Callable[..., Any]:
+        @functools.wraps(function)
         def wrapper(*args: Any, **kwargs: Any) -> Any:
             for attempt in range(1, max_attempts + 1):
                 try:
-                    return func(*args, **kwargs)
+                    return function(*args, **kwargs)
                 except Exception:
                     print(f"Spell failed, retrying... "
                           f"(attempt {attempt}/{max_attempts})")
@@ -94,17 +94,16 @@ def main() -> None:
     print("\nTesting retry spell...")
 
     @retry_spell(max_attempts=3)
-    def failing_spell():
+    def failing_spell() -> None:
         raise Exception("Fail")
 
     print(failing_spell())
 
     print("\nTesting MageGuild...")
 
-    guild = MageGuild()
     print(MageGuild.validate_mage_name("Lorely"))
     print(MageGuild.validate_mage_name("Ix"))
-
+    guild = MageGuild()
     print(guild.cast_spell("Lightning", 15))
     print(guild.cast_spell("Ice", 5))
 

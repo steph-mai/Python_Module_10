@@ -6,7 +6,7 @@
 #  By: stmaire <stmaire@student.42.fr>           +#+  +:+       +#+         #
 #                                              +#+#+#+#+#+   +#+            #
 #  Created: 2026/03/12 16:33:38 by steph           #+#    #+#               #
-#  Updated: 2026/03/13 08:50:59 by stmaire         ###   ########.fr        #
+#  Updated: 2026/03/16 18:04:57 by stmaire         ###   ########.fr        #
 #                                                                           #
 # ************************************************************************* #
 
@@ -14,27 +14,36 @@ from typing import Any
 
 
 def artifact_sorter(artifacts: list[dict[str, Any]]) -> list[dict[str, Any]]:
-    sorted_artifacts = sorted(
-        artifacts,
-        key=lambda artifact: artifact["power"],
-        reverse=True
+    try:
+        return sorted(
+            artifacts,
+            key=lambda artifact: artifact["power"],
+            reverse=True
         )
-    return sorted_artifacts
+    except (KeyError, TypeError) as e:
+        print(f"Sorting failed: Missing or invalid 'power' key. Error: {e}")
+        return []
 
 
 def power_filter(
         mages: list[dict[str, Any]],
         min_power: int
         ) -> list[dict[str, Any]]:
-    filtered_mages = list(
-        filter(lambda mage: mage["power"] >= min_power, mages)
+    try:
+        return list(
+            filter(lambda m: int(m.get("power", 0)) >= min_power, mages)
         )
-    return filtered_mages
+    except (TypeError, ValueError) as e:
+        print(f"Invalid data: {e}.")
+        return []
 
 
 def spell_transformer(spells: list[str]) -> list[str]:
-    transformed_spells = list(map(lambda x: f"*{x}*", spells))
-    return transformed_spells
+    try:
+        return list(map(lambda x: f"*{str(x)}*", spells))
+    except Exception as e:
+        print(f"Transformation failed: {e}")
+        return []
 
 
 def mage_stats(mages: list[dict[str, Any]]) -> dict[str, Any]:

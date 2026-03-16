@@ -6,7 +6,7 @@
 #  By: stmaire <stmaire@student.42.fr>           +#+  +:+       +#+         #
 #                                              +#+#+#+#+#+   +#+            #
 #  Created: 2026/03/13 16:25:56 by stmaire         #+#    #+#               #
-#  Updated: 2026/03/16 16:08:17 by stmaire         ###   ########.fr        #
+#  Updated: 2026/03/16 18:20:26 by stmaire         ###   ########.fr        #
 #                                                                           #
 # ************************************************************************* #
 
@@ -68,23 +68,23 @@ def memoized_fibonacci(n: int) -> int:
 
 def spell_dispatcher() -> Callable[[Any], str]:
     @functools.singledispatch
-    def dispatcher(data: Any) -> str:
+    def create_spell(data: Any) -> str:
         return (f"Spell cannot be created: {data} is not a valid data."
                 f"(Data must be int, str or list)")
 
-    @dispatcher.register(int)
+    @create_spell.register(int)
     def _(damage_spell: int) -> str:
         return (f"Suffer {damage_spell} points of damage")
 
-    @dispatcher.register(str)
+    @create_spell.register(str)
     def _(enchantment: str) -> str:
-        return (f"Enchantment is {enchantment}")
+        return (f"Cast {enchantment}")
 
-    @dispatcher.register(list)
-    def _(multi_cast: list) -> str:
+    @create_spell.register(list)
+    def _(multi_cast: list[Any]) -> str:
         return (f"'Cast {len(multi_cast)} spells'")
 
-    return dispatcher
+    return create_spell
 
 
 def main() -> None:
@@ -111,12 +111,12 @@ def main() -> None:
     print(f"Fib(35) = {result}")
 
     print("\nTesting spell dispatcher")
-    cast = spell_dispatcher()
-    print(f"Cast: damage spell = 10 : '{cast(10)}'")
-    print(f"Cast: enchantment = 'Petrification': '{cast('Petrification')}'")
+    caster = spell_dispatcher()
+    print(f"Cast: damage spell = 10 : '{caster(10)}'")
+    print(f"Cast: enchantment = 'Petrification': '{caster('Petrification')}'")
     print(f"Multicast: ('Petrification', 'Levitation'): "
-          f"{cast(['Petrification', 'Levitation'])}")
-    print(f"Testing another value: float 4.2: {cast(4.2)}")
+          f"{caster(['Petrification', 'Levitation'])}")
+    print(f"Testing another value: float 4.2: {caster(4.2)}")
 
 
 if __name__ == "__main__":

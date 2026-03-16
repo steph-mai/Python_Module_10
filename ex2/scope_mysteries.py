@@ -42,7 +42,7 @@ def enchantment_factory(enchantment_type: str) -> Callable[[str], str]:
     return create_enchanted_description
 
 
-def memory_vault() -> dict[str, Callable]:
+def memory_vault() -> dict[str, Callable[..., Any]]:
     _vault = {}
 
     def store(key: str, value: Any) -> None:
