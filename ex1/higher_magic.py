@@ -6,7 +6,7 @@
 #  By: stmaire <stmaire@student.42.fr>           +#+  +:+       +#+         #
 #                                              +#+#+#+#+#+   +#+            #
 #  Created: 2026/03/13 08:55:30 by stmaire         #+#    #+#               #
-#  Updated: 2026/03/13 13:40:29 by stmaire         ###   ########.fr        #
+#  Updated: 2026/03/16 08:43:14 by stmaire         ###   ########.fr        #
 #                                                                           #
 # ************************************************************************* #
 
@@ -35,7 +35,7 @@ def power_amplifier(base_spell: Callable, multiplier: int) -> Callable:
 
 
 def conditional_caster(condition: Callable, spell: Callable) -> Callable:
-    def valid_cast_spell(*args, **kwargs):
+    def valid_cast_spell(*args, **kwargs) -> str:
         try:
             valid = condition(*args, **kwargs)
             if valid is False:

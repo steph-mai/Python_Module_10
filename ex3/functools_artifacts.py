@@ -6,17 +6,17 @@
 #  By: stmaire <stmaire@student.42.fr>           +#+  +:+       +#+         #
 #                                              +#+#+#+#+#+   +#+            #
 #  Created: 2026/03/13 16:25:56 by stmaire         #+#    #+#               #
-#  Updated: 2026/03/16 13:11:11 by stmaire         ###   ########.fr        #
+#  Updated: 2026/03/16 16:08:17 by stmaire         ###   ########.fr        #
 #                                                                           #
 # ************************************************************************* #
 
-from typing import Callable, Any
-from functools import reduce, partial, lru_cache, singledispatch
+from typing import Callable, Any, Dict
+import functools
 import operator
 
 
 def spell_reducer(spells: list[int], operation: str) -> int:
-    operations = {
+    operations: Dict[str, Callable[[int, int], int]] = {
         "add": operator.add,
         "multiply": operator.mul,
         "max": max,
@@ -29,7 +29,7 @@ def spell_reducer(spells: list[int], operation: str) -> int:
         return 0
 
     try:
-        return (reduce(operations[operation], spells))
+        return (functools.reduce(operations[operation], spells))
     except Exception:
         return 0
 
@@ -42,16 +42,22 @@ def base_enchantment(power: int, element: str, target: str) -> str:
     return (f"{element} {target} with {power}")
 
 
-def partial_enchanter(base_enchantment: Callable) -> dict[str, Callable]:
-    enchanters = {
-        "fire_enchant": partial(base_enchantment, 50, "fire"),
-        "ice_enchant": partial(base_enchantment, 50, "ice"),
-        "lightning_enchant": partial(base_enchantment, 50, "lightning")
+def partial_enchanter(
+        base_enchantment: Callable[[int, str, str], str]
+        ) -> dict[str, Callable[[str], str]]:
+    enchanters: dict[str, Callable[[str], str]] = {
+        "fire_enchant": functools.partial(base_enchantment, 50, "fire"),
+        "ice_enchant": functools.partial(base_enchantment, 50, "ice"),
+        "lightning_enchant": functools.partial(
+            base_enchantment,
+            50,
+            "lightning"
+            )
     }
     return (enchanters)
 
 
-@lru_cache(maxsize=None)
+@functools.lru_cache(maxsize=None)
 def memoized_fibonacci(n: int) -> int:
     if n < 0:
         return 0
@@ -60,8 +66,8 @@ def memoized_fibonacci(n: int) -> int:
     return memoized_fibonacci(n - 1) + memoized_fibonacci(n - 2)
 
 
-def spell_dispatcher() -> Callable:
-    @singledispatch
+def spell_dispatcher() -> Callable[[Any], str]:
+    @functools.singledispatch
     def dispatcher(data: Any) -> str:
         return (f"Spell cannot be created: {data} is not a valid data."
                 f"(Data must be int, str or list)")

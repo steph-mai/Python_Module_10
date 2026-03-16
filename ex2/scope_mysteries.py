@@ -1,7 +1,7 @@
-from typing import Callable, Any
+from typing import Callable, Any, Union
 
 
-def mage_counter() -> Callable:
+def mage_counter() -> Callable[[], int]:
     count = 0
 
     def incrementer() -> int:
@@ -12,7 +12,7 @@ def mage_counter() -> Callable:
     return incrementer
 
 
-def spell_accumulator(initial_power: int) -> Callable:
+def spell_accumulator(initial_power: int) -> Callable[[int], Union[int, str]]:
     if not isinstance(initial_power, int):
         def handle_error() -> str:
             return "Power must be an integer"
@@ -31,7 +31,7 @@ def spell_accumulator(initial_power: int) -> Callable:
     return accumulate_power
 
 
-def enchantment_factory(enchantment_type: str) -> Callable:
+def enchantment_factory(enchantment_type: str) -> Callable[[str], str]:
     def create_enchanted_description(item: str) -> str:
         try:
             enchantment_description = f"{enchantment_type} {item}"
@@ -43,16 +43,16 @@ def enchantment_factory(enchantment_type: str) -> Callable:
 
 
 def memory_vault() -> dict[str, Callable]:
-    vault = {}
+    _vault = {}
 
     def store(key: str, value: Any) -> None:
         try:
-            vault[key] = value
+            _vault[key] = value
         except Exception:
             print("Cannot store in dictionnary")
 
     def recall(key: str) -> Any:
-        return vault.get(key, "Memory not found")
+        return _vault.get(key, "Memory not found")
 
     return {
         'store': store,
@@ -90,9 +90,9 @@ def main() -> None:
     print("\nTesting memory vault...")
 
     vault = memory_vault()
-    vault['store']("my secret artifact", "my secret spell")
-    print(f"Recall secret: {vault['recall']('my secret artifact')}")
-    print(f"Recall unknown: {vault['recall']('my secret password')}")
+    vault['store']("my secret spell", "abracadabra")
+    print(f"Recall secret: {vault['recall']('my secret spell')}")
+    print(f"Recall unknown: {vault['recall']('my lost secret')}")
 
 
 if __name__ == "__main__":
