@@ -1,4 +1,16 @@
-from typing import Callable, Any, Union
+# ************************************************************************* #
+#                                                                           #
+#                                                      :::      ::::::::    #
+#  scope_mysteries.py                                :+:      :+:    :+:    #
+#                                                  +:+ +:+         +:+      #
+#  By: steph <steph@student.42.fr>               +#+  +:+       +#+         #
+#                                              +#+#+#+#+#+   +#+            #
+#  Created: 2026/03/17 08:39:16 by steph           #+#    #+#               #
+#  Updated: 2026/03/17 08:39:17 by steph           ###   ########.fr        #
+#                                                                           #
+# ************************************************************************* #
+
+from typing import Callable, Any
 
 
 def mage_counter() -> Callable[[], int]:
@@ -12,22 +24,16 @@ def mage_counter() -> Callable[[], int]:
     return incrementer
 
 
-def spell_accumulator(initial_power: int) -> Callable[[int], Union[int, str]]:
-    if not isinstance(initial_power, int):
-        def handle_error() -> str:
-            return "Power must be an integer"
-        return handle_error
-
+def spell_accumulator(initial_power: int) -> Callable[[int], int]:
     current_power = initial_power
 
-    def accumulate_power(power: int) -> int | str:
+    def accumulate_power(power: int) -> int:
+        nonlocal current_power
         try:
-            nonlocal current_power
             current_power += power
-            return current_power
         except (TypeError, ValueError):
-            return "Power must be an integer"
-
+            pass
+        return current_power
     return accumulate_power
 
 

@@ -3,10 +3,10 @@
 #                                                      :::      ::::::::    #
 #  higher_magic.py                                   :+:      :+:    :+:    #
 #                                                  +:+ +:+         +:+      #
-#  By: stmaire <stmaire@student.42.fr>           +#+  +:+       +#+         #
+#  By: steph <steph@student.42.fr>               +#+  +:+       +#+         #
 #                                              +#+#+#+#+#+   +#+            #
 #  Created: 2026/03/13 08:55:30 by stmaire         #+#    #+#               #
-#  Updated: 2026/03/16 18:21:55 by stmaire         ###   ########.fr        #
+#  Updated: 2026/03/17 08:41:42 by steph           ###   ########.fr        #
 #                                                                           #
 # ************************************************************************* #
 
@@ -24,7 +24,7 @@ def spell_combiner(
         try:
             return (spell1(*args, **kwargs), spell2(*args, **kwargs))
         except Exception as e:
-            return f"cannot cast spells: {e}"
+            return (f"Error spell1: {e}", f"Error spell2: {e}")
 
     return combined_spell
 
@@ -32,19 +32,19 @@ def spell_combiner(
 def power_amplifier(
     base_spell: Callable[..., Any],
     multiplier: int
-) -> Callable[..., Union[int, str]]:
-    def amplified_spell(*args: Any, **kwargs: Any) -> Union[int, str]:
+) -> Callable[..., int]:
+    def amplified_spell(*args: Any, **kwargs: Any) -> int:
         try:
             result = int(base_spell(*args, **kwargs))
             return result * multiplier
-        except (TypeError, ValueError) as e:
-            return f"Cannot amplify : Invalid args: {e}"
+        except (TypeError, ValueError, KeyError):
+            return 0
 
     return amplified_spell
 
 
 def conditional_caster(
-    condition: Callable[..., bool], 
+    condition: Callable[..., bool],
     spell: Callable[..., Any]
 ) -> Callable[..., Any]:
     def valid_cast_spell(*args: Any, **kwargs: Any) -> Any:
@@ -53,20 +53,20 @@ def conditional_caster(
             if valid is False:
                 return "Spell fizzled"
             return spell(*args, **kwargs)
-        except Exception as e:
-            return f"cannot cast spells: {e}"
+        except Exception:
+            return "Spell fizzled"
 
     return valid_cast_spell
 
 
 def spell_sequence(
     spells: List[Callable[..., Any]]
-) -> Callable[..., Union[List[Any], str]]:
-    def cast_ordered_spells(*args: Any, **kwargs: Any) -> Union[List[Any], str]:
+) -> Callable[..., List[Any]]:
+    def cast_ordered_spells(*args: Any, **kwargs: Any) -> List[Any]:
         try:
             return [s(*args, **kwargs) for s in spells]
-        except Exception as e:
-            return f"cannot cast spells: {e}"
+        except Exception:
+            return []
 
     return cast_ordered_spells
 

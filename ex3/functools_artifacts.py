@@ -3,10 +3,10 @@
 #                                                      :::      ::::::::    #
 #  functools_artifacts.py                            :+:      :+:    :+:    #
 #                                                  +:+ +:+         +:+      #
-#  By: stmaire <stmaire@student.42.fr>           +#+  +:+       +#+         #
+#  By: steph <steph@student.42.fr>               +#+  +:+       +#+         #
 #                                              +#+#+#+#+#+   +#+            #
 #  Created: 2026/03/13 16:25:56 by stmaire         #+#    #+#               #
-#  Updated: 2026/03/16 18:20:26 by stmaire         ###   ########.fr        #
+#  Updated: 2026/03/17 08:36:42 by steph           ###   ########.fr        #
 #                                                                           #
 # ************************************************************************* #
 
@@ -106,9 +106,9 @@ def main() -> None:
 
     print("\nTesting memoized fibonacci")
     result = memoized_fibonacci(10)
-    print(f"Fib(10) = {result}")
+    print(f"Fib(10): {result}")
     result = memoized_fibonacci(35)
-    print(f"Fib(35) = {result}")
+    print(f"Fib(35): {result}")
 
     print("\nTesting spell dispatcher")
     caster = spell_dispatcher()

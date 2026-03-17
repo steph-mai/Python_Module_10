@@ -3,10 +3,10 @@
 #                                                      :::      ::::::::    #
 #  lambda_spells.py                                  :+:      :+:    :+:    #
 #                                                  +:+ +:+         +:+      #
-#  By: stmaire <stmaire@student.42.fr>           +#+  +:+       +#+         #
+#  By: steph <steph@student.42.fr>               +#+  +:+       +#+         #
 #                                              +#+#+#+#+#+   +#+            #
 #  Created: 2026/03/12 16:33:38 by steph           #+#    #+#               #
-#  Updated: 2026/03/16 18:04:57 by stmaire         ###   ########.fr        #
+#  Updated: 2026/03/17 07:59:59 by steph           ###   ########.fr        #
 #                                                                           #
 # ************************************************************************* #
 
@@ -30,17 +30,14 @@ def power_filter(
         min_power: int
         ) -> list[dict[str, Any]]:
     try:
-        return list(
-            filter(lambda m: int(m.get("power", 0)) >= min_power, mages)
-        )
-    except (TypeError, ValueError) as e:
-        print(f"Invalid data: {e}.")
+        return list(filter(lambda m: m['power'] >= min_power, mages))
+    except (KeyError, TypeError):
         return []
 
 
 def spell_transformer(spells: list[str]) -> list[str]:
     try:
-        return list(map(lambda x: f"*{str(x)}*", spells))
+        return list(map(lambda x: f"* {str(x)} *", spells))
     except Exception as e:
         print(f"Transformation failed: {e}")
         return []
@@ -49,10 +46,10 @@ def spell_transformer(spells: list[str]) -> list[str]:
 def mage_stats(mages: list[dict[str, Any]]) -> dict[str, Any]:
     nb_mages = len(mages)
     if nb_mages == 0:
-        return {'max_power': 0, 'least_power': 0, 'avg_power': 0.00}
+        return {'max_power': 0, 'min_power': 0, 'avg_power': 0.00}
 
     max_power_mage = max(mages, key=lambda mage: mage.get("power", 0))
-    least_power_mage = min(mages, key=lambda mage: mage.get("power", 0))
+    min_power_mage = min(mages, key=lambda mage: mage.get("power", 0))
 
     total_power = sum(map(lambda mage: mage.get("power", 0), mages))
 
@@ -60,7 +57,7 @@ def mage_stats(mages: list[dict[str, Any]]) -> dict[str, Any]:
 
     return {
         'max_power': max_power_mage.get("power", 0),
-        'least_power': least_power_mage.get("power", 0),
+        'min_power': min_power_mage.get("power", 0),
         'avg_power': average_power
     }
 
